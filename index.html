@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MPC Management System</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f8f5;
+  color:#173b2b;
+}
+header{
+  background:linear-gradient(135deg,#08783f,#0b9b57);
+  color:white;
+  padding:18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.logoMark{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:white;
+  color:#08783f;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  font-size:18px;
+  border:3px solid #f28b16;
+}
+.logoText b{display:block;font-size:17px}
+.logoText span{font-size:11px}
+.menuBtn{
+  background:#ffffff22;
+  border:1px solid #ffffff55;
+  color:white;
+  padding:10px 13px;
+  border-radius:10px;
+}
+.layout{display:flex;min-height:calc(100vh - 84px)}
+.sidebar{
+  width:235px;
+  background:white;
+  border-right:1px solid #ddd;
+  padding:15px;
+}
+.nav{
+  width:100%;
+  border:0;
+  background:white;
+  padding:13px;
+  text-align:left;
+  border-radius:10px;
+  margin-bottom:6px;
+  color:#28543e;
+  font-size:14px;
+}
+.nav:hover,.nav.active{
+  background:#e7f5ec;
+  color:#08783f;
+  font-weight:bold;
+}
+main{flex:1;padding:22px}
+.pageTitle{
+  font-size:25px;
+  font-weight:bold;
+  margin-bottom:5px;
+}
+.subtitle{color:#718176;margin-bottom:20px}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+}
+.card{
+  background:white;
+  border-radius:15px;
+  padding:18px;
+  box-shadow:0 3px 12px #0000000d;
+}
+.card small{color:#718176}
+.number{font-size:30px;font-weight:bold;margin-top:8px}
+.green{color:#08783f}
+.orange{color:#e97900}
+.blue{color:#2775c7}
+.red{color:#d94141}
+.section{
+  background:white;
+  border-radius:15px;
+  padding:20px;
+  margin-top:20px;
+  box-shadow:0 3px 12px #0000000d;
+}
+button.primary{
+  background:#08783f;
+  color:white;
+  border:0;
+  padding:11px 16px;
+  border-radius:9px;
+  font-weight:bold;
+}
+button.secondary{
+  background:#edf5ef;
+  color:#08783f;
+  border:0;
+  padding:10px 14px;
+  border-radius:9px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+th,td{
+  padding:11px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+  font-size:13px;
+}
+th{background:#edf7f0}
+input,select,textarea{
+  width:100%;
+  padding:11px;
+  border:1px solid #d6ded8;
+  border-radius:8px;
+  margin-top:5px;
+}
+.formGrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+}
+.formGroup{margin-bottom:5px}
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#0008;
+  z-index:50;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+}
+.modalBox{
+  background:white;
+  width:min(700px,100%);
+  max-height:90vh;
+  overflow:auto;
+  border-radius:16px;
+  padding:22px;
+}
+.modalHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.close{
+  border:0;
+  background:#eee;
+  border-radius:50%;
+  width:35px;
+  height:35px;
+}
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  background:#e8f5ed;
+  color:#08783f;
+  font-size:11px;
+}
+.progress{
+  height:18px;
+  background:#e9eee9;
+  border-radius:20px;
+  overflow:hidden;
+}
+.progressFill{
+  height:100%;
+  background:linear-gradient(90deg,#0b9b57,#f28b16);
+}
+.empty{
+  text-align:center;
+  padding:35px;
+  color:#89958e;
+}
+@media(max-width:850px){
+  .sidebar{
+    position:fixed;
+    left:-250px;
+    top:84px;
+    bottom:0;
+    z-index:20;
+    transition:.2s;
+  }
+  .sidebar.open{left:0}
+  .cards{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  main{padding:14px}
+  .cards{grid-template-columns:1fr 1fr}
+  .formGrid{grid-template-columns:1fr}
+  table{font-size:11px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logoMark">MPC</div>
+    <div class="logoText">
+      <b>MUSLIM PRIVAT CENDEKIA</b>
+      <span>GORONTALO · MANAGEMENT SYSTEM</span>
+    </div>
+  </div>
+  <button class="menuBtn" onclick="toggleMenu()">☰</button>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar" id="sidebar">
+  <button class="nav active" onclick="showPage('dashboard',this)">🏠 Dashboard</button>
+  <button class="nav" onclick="showPage('pendaftaran',this)">📝 Pendaftaran</button>
+  <button class="nav" onclick="showPage('siswa',this)">👨‍🎓 Data Siswa</button>
+  <button class="nav" onclick="showPage('tutor',this)">👩‍🏫 Data Tutor</button>
+  <button class="nav" onclick="showPage('jadwal',this)">📅 Jadwal</button>
+  <button class="nav" onclick="showPage('infak',this)">💰 Infak & Honor</button>
+  <button class="nav" onclick="showPage('evaluasi',this)">📈 Evaluasi</button>
+  <button class="nav" onclick="showPage('laporan',this)">📊 Laporan</button>
+  <button class="nav" onclick="showPage('pengaturan',this)">⚙️ Pengaturan</button>
+  <button class="nav" onclick="backupData()">💾 Backup</button>
+</aside>
+
+<main id="app"></main>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <div class="modalHead">
+      <h2 id="modalTitle"></h2>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const KEY='MPC_MANAGEMENT_DATA';
+
+let data=JSON.parse(localStorage.getItem(KEY)) || {
+  siswa:[],
+  tutor:[],
+  jadwal:[],
+  pembayaran:[],
+  evaluasi:[]
+};
+
+function save(){
+  localStorage.setItem(KEY,JSON.stringify(data));
+}
+
+function toggleMenu(){
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function showPage(page,btn){
+  document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+
+  const pages={
+    dashboard:dashboardPage,
+    pendaftaran:pendaftaranPage,
+    siswa:siswaPage,
+    tutor:tutorPage,
+    jadwal:jadwalPage,
+    infak:infakPage,
+    evaluasi:evaluasiPage,
+    laporan:laporanPage,
+    pengaturan:pengaturanPage
+  };
+
+  document.getElementById('app').innerHTML=pages[page]();
+}
+
+function dashboardPage(){
+ return `
+ <div class="pageTitle">Dashboard</div>
+ <div class="subtitle">Pusat kontrol Muslim Privat Cendekia Gorontalo</div>
+
+ <div class="cards">
+  <div class="card">
+   <small>Siswa Aktif</small>
+   <div class="number green">${data.siswa.length}</div>
+  </div>
+  <div class="card">
+   <small>Tutor Aktif</small>
+   <div class="number blue">${data.tutor.length}</div>
+  </div>
+  <div class="card">
+   <small>Pertemuan Terlapor</small>
+   <div class="number orange">${data.jadwal.filter(x=>x.laporan).length}</div>
+  </div>
+  <div class="card">
+   <small>Perlu Ditagih</small>
+   <div class="number red">${data.pembayaran.filter(x=>x.status!='Lunas').length}</div>
+  </div>
+ </div>
+
+ <div class="section">
+  <h3>⚡ Perlu Tindakan</h3>
+  <p>📝 Pendaftaran masuk: <b>${data.siswa.length}</b></p>
+  <p>📅 Jadwal tersimpan: <b>${data.jadwal.length}</b></p>
+  <p>📈 Evaluasi tersedia: <b>${data.evaluasi.length}</b></p>
+ </div>
+
+ <div class="section">
+  <h3>📚 Progress Siswa</h3>
+  ${data.siswa.length ? data.siswa.slice(0,5).map(s=>{
+    let n=s.pertemuan||0;
+    let p=Math.min(n/12*100,100);
+    return `
+    <div style="margin:15px 0">
+      <b>${s.nama}</b>
+      <small style="float:right">${n}/12 pertemuan</small>
+      <div class="progress"><div class="progressFill" style="width:${p}%"></div></div>
+    </div>`;
+  }).join(''):'<div class="empty">Belum ada data siswa.</div>'}
+ </div>
+ `;
+}
+
+function pendaftaranPage(){
+ return `
+ <div class="pageTitle">📝 Pendaftaran</div>
+ <div class="subtitle">Data pendaftaran siswa dari GForm</div>
+
+ <div class="section">
+ <button class="primary" onclick="addStudent()">＋ Tambah Siswa</button>
+ <table>
+ <tr>
+  <th>No. Pendaftaran</th>
+  <th>Nama</th>
+  <th>Sekolah</th>
+  <th>Program</th>
+  <th>Status</th>
+ </tr>
+ ${data.siswa.map(s=>`
+ <tr>
+  <td>${s.no||'-'}</td>
+  <td>${s.nama}</td>
+  <td>${s.sekolah||'-'}</td>
+  <td>${s.program||'-'}</td>
+  <td><span class="badge">${s.status||'Pendaftaran Masuk'}</span></td>
+ </tr>`).join('')}
+ </table>
+ ${!data.siswa.length?'<div class="empty">Belum ada pendaftaran.</div>':''}
+ </div>`;
+}
+
+function siswaPage(){
+ return `
+ <div class="pageTitle">👨‍🎓 Data Siswa</div>
+ <div class="subtitle">Data peserta didik MPC</div>
+ <div class="section">
+ <button class="primary" onclick="addStudent()">＋ Tambah Siswa</button>
+ <table>
+ <tr><th>Nama</th><th>Kelas</th><th>Sekolah</th><th>Program</th><th>Frekuensi</th></tr>
+ ${data.siswa.map(s=>`
+ <tr>
+  <td>${s.nama}</td>
+  <td>${s.kelas||'-'}</td>
+  <td>${s.sekolah||'-'}</td>
+  <td>${s.program||'-'}</td>
+  <td>${s.frekuensi||'-'}</td>
+ </tr>`).join('')}
+ </table>
+ ${!data.siswa.length?'<div class="empty">Belum ada siswa.</div>':''}
+ </div>`;
+}
+
+function tutorPage(){
+ return `
+ <div class="pageTitle">👩‍🏫 Data Tutor</div>
+ <div class="subtitle">Data tutor dan penugasan</div>
+ <div class="section">
+ <button class="primary" onclick="addTutor()">＋ Tambah Tutor</button>
+ <table>
+ <tr><th>ID</th><th>Nama</th><th>WhatsApp</th><th>Pendidikan</th><th>Status</th></tr>
+ ${data.tutor.map(t=>`
+ <tr>
+  <td>${t.id}</td>
+  <td>${t.nama}</td>
+  <td>${t.wa||'-'}</td>
+  <td>${t.pendidikan||'-'}</td>
+  <td><span class="badge">${t.status||'Aktif'}</span></td>
+ </tr>`).join('')}
+ </table>
+ ${!data.tutor.length?'<div class="empty">Belum ada tutor.</div>':''}
+ </div>`;
+}
+
+function jadwalPage(){
+ return `
+ <div class="pageTitle">📅 Jadwal</div>
+ <div class="subtitle">Jadwal belajar dan laporan pertemuan</div>
+ <div class="section">
+ <button class="primary" onclick="addSchedule()">＋ Tambah Jadwal</button>
+ <table>
+ <tr><th>Siswa</th><th>Tutor</th><th>Hari</th><th>Lokasi</th><th>Status</th></tr>
+ ${data.jadwal.map(j=>`
+ <tr>
+  <td>${j.siswa}</td>
+  <td>${j.tutor}</td>
+  <td>${j.hari}</td>
+  <td>${j.lokasi||'-'}</td>
+  <td><span class="badge">${j.status||'Aktif'}</span></td>
+ </tr>`).join('')}
+ </table>
+ ${!data.jadwal.length?'<div class="empty">Belum ada jadwal.</div>':''}
+ </div>`;
+}
+
+function infakPage(){
+ let total=0;
+ data.jadwal.forEach(j=>{if(j.laporan)total+=25000});
+ return `
+ <div class="pageTitle">💰 Infak & Honor Tutor</div>
+ <div class="subtitle">Honor tutor berdasarkan pertemuan yang benar-benar dilaporkan</div>
+
+ <div class="cards">
+  <div class="card">
+   <small>Tarif Tutor / Pertemuan</small>
+   <div class="number green">Rp25.000</div>
+  </div>
+  <div class="card">
+   <small>Total Pertemuan</small>
+   <div class="number">${data.jadwal.filter(x=>x.laporan).length}</div>
+  </div>
+  <div class="card">
+   <small>Infaq Bruto</small>
+   <div class="number orange">Rp${total.toLocaleString('id-ID')}</div>
+  </div>
+  <div class="card">
+   <small>Potongan</small>
+   <div class="number red">Rp0</div>
+  </div>
+ </div>
+
+ <div class="section">
+  <h3>Rekap Honor Tutor</h3>
+  <p>Perhitungan: jumlah pertemuan × Rp25.000.</p>
+  <button class="primary" onclick="alert('Fitur rekap tutor siap digunakan setelah data pertemuan masuk.')">Lihat Rekap</button>
+ </div>`;
+}
+
+function evaluasiPage(){
+ return `
+ <div class="pageTitle">📈 Evaluasi Siswa</div>
+ <div class="subtitle">Evaluasi perkembangan siswa dan link untuk orang tua</div>
+ <div class="section">
+ <button class="primary" onclick="addEvaluation()">＋ Buat Evaluasi</button>
+ <table>
+ <tr><th>Siswa</th><th>Periode</th><th>Perkembangan</th><th>Status</th></tr>
+ ${data.evaluasi.map(e=>`
+ <tr>
+  <td>${e.siswa}</td>
+  <td>${e.periode}</td>
+  <td>${e.catatan}</td>
+  <td><span class="badge">${e.status}</span></td>
+ </tr>`).join('')}
+ </table>
+ ${!data.evaluasi.length?'<div class="empty">Belum ada evaluasi.</div>':''}
+ </div>`;
+}
+
+function laporanPage(){
+ return `
+ <div class="pageTitle">📊 Laporan</div>
+ <div class="subtitle">Ringkasan data MPC</div>
+ <div class="cards">
+  <div class="card"><small>Total Siswa</small><div class="number">${data.siswa.length}</div></div>
+  <div class="card"><small>Total Tutor</small><div class="number">${data.tutor.length}</div></div>
+  <div class="card"><small>Total Jadwal</small><div class="number">${data.jadwal.length}</div></div>
+  <div class="card"><small>Total Evaluasi</small><div class="number">${data.evaluasi.length}</div></div>
+ </div>
+ <div class="section">
+  <button class="primary" onclick="backupData()">💾 Backup Data</button>
+ </div>`;
+}
+
+function pengaturanPage(){
+ return `
+ <div class="pageTitle">⚙️ Pengaturan</div>
+ <div class="subtitle">Pengaturan dasar MPC Management System</div>
+ <div class="section">
+  <h3>Paket Belajar</h3>
+  <p>Normal: <b>Rp420.000 / 12 pertemuan</b></p>
+  <p>Promo: <b>Rp350.000 / 12 pertemuan</b></p>
+  <p>Infaq tutor: <b>Rp25.000 / pertemuan</b></p>
+  <hr>
+  <h3>Zona Progress</h3>
+  <p>🟢 Aman → 🟡 Mendekati akhir paket → 🔴 Waktu penagihan</p>
+ </div>`;
+}
+
+function openModal(title,body){
+ document.getElementById('modalTitle').innerText=title;
+ document.getElementById('modalBody').innerHTML=body;
+ document.getElementById('modal').style.display='flex';
+}
+
+function closeModal(){
+ document.getElementById('modal').style.display='none';
+}
+
+function addStudent(){
+ openModal('Tambah Siswa',`
+ <div class="formGrid">
+  <div class="formGroup">Nama Lengkap<input id="sn"></div>
+  <div class="formGroup">Sekolah<input id="ss"></div>
+  <div class="formGroup">Kelas<input id="sk"></div>
+  <div class="formGroup">Program
+   <select id="sp">
+    <option>Tahsin Qur'an</option>
+    <option>Tahfidz Qur'an</option>
+    <option>CalisMat</option>
+    <option>Matematika</option>
+    <option>BHS Inggris</option>
+    <option>Kimia</option>
+    <option>Biologi</option>
+    <option>Fisika</option>
+    <option>IPS</option>
+   </select>
+  </div>
+  <div class="formGroup">Frekuensi
+   <select id="sf"><option>2x Sepekan</option><option>3x Sepekan</option></select>
+  </div>
+ </div>
+ <br>
+ <button class="primary" onclick="saveStudent()">Simpan</button>
+ `);
+}
+
+function saveStudent(){
+ let s={
+  no:'MPC-'+new Date().getFullYear().toString().slice(2)+
+  String(new Date().getMonth()+1).padStart(2,'0')+
+  '-'+String(data.siswa.length+1).padStart(4,'0'),
+  nama:document.getElementById('sn').value,
+  sekolah:document.getElementById('ss').value,
+  kelas:document.getElementById('sk').value,
+  program:document.getElementById('sp').value,
+  frekuensi:document.getElementById('sf').value,
+  status:'Resmi Terdaftar',
+  pertemuan:0
+ };
+ if(!s.nama)return alert('Nama siswa wajib diisi.');
+ data.siswa.push(s);
+ save();
+ closeModal();
+ showPage('siswa');
+}
+
+function addTutor(){
+ openModal('Tambah Tutor',`
+ <div class="formGrid">
+  <div>Nama Tutor<input id="tn"></div>
+  <div>WhatsApp<input id="tw"></div>
+  <div>Pendidikan<input id="tp"></div>
+ </div><br>
+ <button class="primary" onclick="saveTutor()">Simpan</button>
+ `);
+}
+
+function saveTutor(){
+ let t={
+  id:'T-'+String(data.tutor.length+1).padStart(3,'0'),
+  nama:document.getElementById('tn').value,
+  wa:document.getElementById('tw').value,
+  pendidikan:document.getElementById('tp').value,
+  status:'Aktif'
+ };
+ if(!t.nama)return alert('Nama tutor wajib diisi.');
+ data.tutor.push(t);
+ save();
+ closeModal();
+ showPage('tutor');
+}
+
+function addSchedule(){
+ if(!data.siswa.length)return alert('Tambahkan siswa terlebih dahulu.');
+ if(!data.tutor.length)return alert('Tambahkan tutor terlebih dahulu.');
+
+ openModal('Tambah Jadwal',`
+ <div class="formGrid">
+  <div>Siswa
+   <select id="js">
+   ${data.siswa.map(s=>`<option>${s.nama}</option>`).join('')}
+   </select>
+  </div>
+  <div>Tutor
+   <select id="jt">
+   ${data.tutor.map(t=>`<option>${t.nama}</option>`).join('')}
+   </select>
+  </div>
+  <div>Hari
+   <select id="jh">
+   <option>Senin</option><option>Selasa</option><option>Rabu</option>
+   <option>Kamis</option><option>Jumat</option><option>Sabtu</option><option>Minggu</option>
+   </select>
+  </div>
+  <div>Lokasi<input id="jl" placeholder="Rumah siswa / lainnya"></div>
+ </div><br>
+ <button class="primary" onclick="saveSchedule()">Simpan</button>
+ `);
+}
+
+function saveSchedule(){
+ data.jadwal.push({
+  siswa:document.getElementById('js').value,
+  tutor:document.getElementById('jt').value,
+  hari:document.getElementById('jh').value,
+  lokasi:document.getElementById('jl').value,
+  status:'Aktif',
+  laporan:false
+ });
+ save();
+ closeModal();
+ showPage('jadwal');
+}
+
+function addEvaluation(){
+ if(!data.siswa.length)return alert('Belum ada siswa.');
+
+ openModal('Evaluasi Siswa',`
+ <div class="formGroup">Siswa
+ <select id="es">
+ ${data.siswa.map(s=>`<option>${s.nama}</option>`).join('')}
+ </select></div>
+ <div class="formGroup">Periode<input id="ep" placeholder="Oktober 2026"></div>
+ <div class="formGroup">Catatan Perkembangan
+ <textarea id="ec" rows="4"></textarea></div>
+ <br>
+ <button class="primary" onclick="saveEvaluation()">Terbitkan Evaluasi</button>
+ `);
+}
+
+function saveEvaluation(){
+ data.evaluasi.push({
+  siswa:document.getElementById('es').value,
+  periode:document.getElementById('ep').value,
+  catatan:document.getElementById('ec').value,
+  status:'Terbit'
+ });
+ save();
+ closeModal();
+ showPage('evaluasi');
+}
+
+function backupData(){
+ let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+ let a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);
+ a.download='MPC-Backup-Data.json';
+ a.click();
+}
+
+showPage('dashboard');
+</script>
+
+</body>
+</html>
